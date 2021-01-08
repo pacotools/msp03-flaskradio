@@ -30,8 +30,8 @@ def home():
     response = requests.request("GET", url, headers=headers)
     session['country_name'] = response.json()["country_name"]
     # set first station id or set a default country and station
-    existing_country = mongo.db.country.find_one(
-        {'country': session['country_name']})
+    existing_country = mongo.db.countries.find_one(
+        {'name': session['country_name']})
     if existing_country:
         session['current_station'] = str(mongo.db.stations.find_one(
             {'country': session['country_name']})['_id'])
