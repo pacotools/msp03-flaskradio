@@ -29,7 +29,7 @@ def home():
     # get current country name
     response = requests.request("GET", url, headers=headers)
     session['country_name'] = response.json()["country_name"]
-    # set first station id or set a default country and station
+    # set first station id or set a default country and station id
     existing_country = mongo.db.countries.find_one(
         {'name': session['country_name']})
     if existing_country:
@@ -62,10 +62,7 @@ def radio():
     favorites = list(mongo.db.favorites.find(
         {'user': session['user'].lower()}))
 
-    if session['current_station'] == "0":
-        i = 0
-    else:
-        i = find_station(stations)
+    i = find_station(stations)
 
     station_info = {
         "country_name": stations[i]['country'],
@@ -88,6 +85,16 @@ def find_station(station_list):
             return i
         i += 1
     return 0
+
+
+@app.route('/add_favorite', methods=["GET", "POST"])
+def add_favorite():
+    existing_station = str(mongo.db.favorites.find_one({
+        'user': session['user'],
+        'station_id': session['current_station']
+    }))
+    flash(existing_station)
+    return redirect(url_for('radio'))
 
 
 @app.route('/register', methods=["GET", "POST"])
