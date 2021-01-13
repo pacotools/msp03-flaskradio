@@ -93,7 +93,22 @@ def add_favorite():
         'user': session['user'],
         'station_id': session['current_station']
     }))
-    flash(existing_station)
+    if not existing_station:
+        station = mongo.db.stations.find_one({
+            '_id': session['current_station']})
+        flash(station)
+        station_info = {
+            "country_name": session['country_name'],
+            "station_id": session['current_station'],
+            "user": session['user'],
+            "url_resolved": station.url_resolved,
+            "station_name": station.name,
+            "homepage": station.homepage,
+            "favicon": station.favicon,
+            "tags": station.tags,
+        }
+        flash(station_info)
+        # mongo.db.favorites.insert_one(station_info)
     return redirect(url_for('radio'))
 
 
